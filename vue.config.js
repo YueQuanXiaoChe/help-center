@@ -3,9 +3,9 @@ const path = require("path");
 process.env.VUE_APP_VERSION = require("./package.json").version;
 // 是否生产环境
 const IS_PROD = process.env.NODE_ENV === "production";
-// // compression-webpack-plugin 插件
+// compression-webpack-plugin 插件
 const CompressionPlugin = require("compression-webpack-plugin");
-// // uglifyjs-webpack-plugin 插件
+// uglifyjs-webpack-plugin 插件
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = {
@@ -92,19 +92,35 @@ module.exports = {
       // 开启 gzip 压缩
       config.plugins.push(
         new CompressionPlugin({
-          test: /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i,
-          algorithm: "gzip",
-          compressionOptions: { level: 1 },
-          threshold: 1024,
-          minRatio: 0.8,
-          filename: "[path][base].gz",
-          deleteOriginalAssets: false,
-          cache: true
+          test: /\.(js|css|json|txt|html|ico|svg|png)(\?.*)?$/i, // 处理所有匹配此 {RegExp} 的资源
+          // include: /\/includes/, // 要包含的文件
+          // exclude: /\/excludes/, // 要排除的文件
+          algorithm: "gzip", // 压缩算法
+          compressionOptions: { level: 1 }, // 压缩选项
+          // threshold: 1024, // 仅处理大于此大小的资源，按字节计算
+          // minRatio: 0.8, // 仅压缩比该比率更好的资源
+          // minRatio: Infinity, // 压缩所有资源，包括字节大小为 0 的文件
+          minRatio: Number.MAX_SAFE_INTEGER, // 压缩所有资源，不包括字节大小为 0 的文件
+          filename: "[path][base].gz", // 目标资源文件名
+          deleteOriginalAssets: false, // 是否删除原始资源
+          cache: true // 启用/禁用文件缓存，缓存默认路径: node_modules/.cache/compression-webpack-plugin
         })
       );
       // 打包时自动删除 debugger / console
       config.optimization.minimizer.push(
         new UglifyJsPlugin({
+          test: /\.js(\?.*)?$/i, // 测试匹配文件
+          // include: /\/includes/, // 要包含的文件
+          // exclude: /\/excludes/, // 要排除的文件
+          chunkFilter: () => true, // 允许过滤哪些块应该被丑化（默认情况下所有块都被丑化）
+          cache: false, // 是否启用文件缓存，缓存目录的默认路径 node_modules/.chche/uglifyjs-webpack-plugin
+          // cacheKeys: defaultCacheKeys => defaultCacheKeys, // 允许覆盖默认的缓存键
+          parallel: true, // 是否使用多进程并行运行来提高构建速度
+          sourceMap: false,
+          // minify: undefined,
+          extractComments: false, // 启用/禁用提取注释
+          // warningsFilter: () => true,
+          // 压缩选项
           uglifyOptions: {
             compress: {
               drop_debugger: true, // 生产环境自动删除 debugger
