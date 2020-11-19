@@ -1,13 +1,12 @@
-// const path = require("path");
+const path = require("path");
 // 版本号
 process.env.VUE_APP_VERSION = require("./package.json").version;
 // 是否生产环境
 const IS_PROD = process.env.NODE_ENV === "production";
 // // compression-webpack-plugin 插件
-// const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i;
-// const CompressionWebpackPlugin = require("compression-webpack-plugin");
+const CompressionPlugin = require("compression-webpack-plugin");
 // // uglifyjs-webpack-plugin 插件
-// const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = {
   /**
@@ -16,7 +15,7 @@ module.exports = {
    * 这个值也可以被设置为空字符串 ('') 或是相对路径 ('./')，这样所有的资源都会被链接为相对路径，这样打出来的包可以被部署在任意路径。
    */
   publicPath: "/",
-  
+
   /**
    * Default: 'dist'
    * 输出文件目录，当运行 vue-cli-service build 时生成的生产环境构建文件的目录。注意目标目录在构建之前会被清除 (构建时传入 --no-clean 可关闭该行为)。
@@ -79,7 +78,7 @@ module.exports = {
 
   /**
    * Default: false
-   * 在生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)。如果你构建后的文件是部署在 CDN 上的，启用该选项可以提供额外的安全性。
+   * 在生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)。如果你构建后的文件是部署在 CDN 上的，启用该选项可以提供额外的安全性。
    */
   // integrity: false,
 
@@ -90,7 +89,30 @@ module.exports = {
   configureWebpack: config => {
     // 生产环境
     if (IS_PROD) {
-      //
+      // 开启 gzip 压缩
+      config.plugins.push(
+        new CompressionPlugin({
+          test: /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i,
+          algorithm: "gzip",
+          compressionOptions: { level: 1 },
+          threshold: 1024,
+          minRatio: 0.8,
+          filename: "[path][base].gz",
+          deleteOriginalAssets: false,
+          cache: true
+        })
+      );
+      // 打包时自动删除 debugger / console
+      config.optimization.minimizer.push(
+        new UglifyJsPlugin({
+          uglifyOptions: {
+            compress: {
+              drop_debugger: true, // 生产环境自动删除 debugger
+              drop_console: true // 生产环境自动删除 console
+            }
+          }
+        })
+      );
     }
   },
 
@@ -98,7 +120,13 @@ module.exports = {
    * 是一个函数，会接收一个基于 webpack-chain 的 ChainableConfig 实例。允许对内部的 webpack 配置进行更细粒度的修改。
    */
   chainWebpack: config => {
-    //
+    config.plugins.delete("prefetch");
+    config.plugins.delete("preload");
+
+    // 配置别名
+    config.resolve.alias
+      .set("@views", path.resolve(__dirname, "./src/views"))
+      .set("@comp", path.resolve(__dirname, "./src/components"));
   },
 
   // css: {
@@ -106,26 +134,26 @@ module.exports = {
   // },
 
   /**
-   * 所有 webpack-dev-server 的选项都支持。注意：
-   * 有些值像 host、port 和 https 可能会被命令行参数覆写。
-   * 有些值像 publicPath 和 historyApiFallback 不应该被修改，因为它们需要和开发服务器的 publicPath 同步以保障正常的工作。
+   * 所有 webpack-dev-server 的选项都支持。注意：
+   * 有些值像 host、port 和 https 可能会被命令行参数覆写。
+   * 有些值像 publicPath 和 historyApiFallback 不应该被修改，因为它们需要和开发服务器的 publicPath 同步以保障正常的工作。
    */
-  devServer: {
-    open: false, // 项目启动时自动打开浏览器
-    host: "0.0.0.0",
-    port: 8080, // 端口
-    https: false, // 是否启用 http 协议
-    // 如果你的前端应用和后端 API 服务器没有运行在同一个主机上，你需要在开发环境下将 API 请求代理到 API 服务器。这个问题可以通过 vue.config.js 中的 devServer.proxy 选项来配置。
-    proxy: {
-      "/proxy": {
-        target: process.env.VUE_APP_API, // "http://192.168.12.201:40003", //代理地址，这里设置的地址会代替axios中设置的baseURL
-        secure: false,
-        changeOrigin: true, // 开启代理，在本地创建一个虚拟服务端
-        // ws: true, // 是否启用websockets
-        pathRewrite: { "^/proxy": "lb/api" }
-      }
-    }
-  },
+  // devServer: {
+  //   open: false, // 项目启动时自动打开浏览器
+  //   host: "0.0.0.0",
+  //   port: 8080, // 端口
+  //   https: false, // 是否启用 http 协议
+  //   // 如果你的前端应用和后端 API 服务器没有运行在同一个主机上，你需要在开发环境下将 API 请求代理到 API 服务器。这个问题可以通过 vue.config.js 中的 devServer.proxy 选项来配置。
+  //   proxy: {
+  //     "/proxy": {
+  //       target: process.env.VUE_APP_API, // "http://192.168.12.201:40003", //代理地址，这里设置的地址会代替axios中设置的baseURL
+  //       secure: false,
+  //       changeOrigin: true, // 开启代理，在本地创建一个虚拟服务端
+  //       // ws: true, // 是否启用 websockets
+  //       pathRewrite: { "^/proxy": "lb/api" }
+  //     }
+  //   }
+  // },
 
   /**
    * Default: require('os').cpus().length > 1
