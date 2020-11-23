@@ -8,6 +8,8 @@ const IS_PROD = process.env.NODE_ENV === "production";
 const CompressionPlugin = require("compression-webpack-plugin");
 // uglifyjs-webpack-plugin 插件
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+// 是否启用 https 协议
+const IS_HTTPS = false;
 
 // 官方配置文档 ----> https://cli.vuejs.org/zh/config/#baseurl
 module.exports = {
@@ -152,7 +154,7 @@ module.exports = {
           // include: /\/includes/, // 要包含的文件
           // exclude: /\/excludes/, // 要排除的文件
           chunkFilter: () => true, // 允许过滤哪些块应该被丑化（默认情况下所有块都被丑化）
-          cache: false, // 是否启用文件缓存，缓存目录的默认路径 node_modules/.chche/uglifyjs-webpack-plugin
+          cache: false, // 是否启用文件缓存，缓存目录的默认路径 node_modules/.cache/uglifyjs-webpack-plugin
           // cacheKeys: defaultCacheKeys => defaultCacheKeys, // 允许覆盖默认的缓存键
           parallel: true, // 是否使用多进程并行运行来提高构建速度
           sourceMap: false,
@@ -195,6 +197,7 @@ module.exports = {
     /**
      * Type: boolean
      * Default: true
+     * 启用 CSS modules for all css / pre-processor files.
      */
     requireModuleExtension: true,
 
@@ -236,19 +239,17 @@ module.exports = {
    */
   devServer: {
     open: false, // 设置 server 启动后是否自动打开浏览器
-    // compress: true, // 对 devServer 所有服务启用 gzip 压缩
-    // hot: false, // 用于设置代码保存时是否进行热更新（局部刷新，不刷新整个页面）
     host: "0.0.0.0", // 允许外部ip访问，设定为："0.0.0.0"
     port: 8080, // 指定要监听请求的端口号
-    https: false, // 是否启用 https 协议
+    https: IS_HTTPS, // 是否启用 https 协议
     // 如果你的前端应用和后端 API 服务器没有运行在同一个主机上，你需要在开发环境下将 API 请求代理到 API 服务器。这个问题可以通过 vue.config.js 中的 devServer.proxy 选项来配置。
     proxy: {
       "/proxy": {
-        target: process.env.VUE_APP_API, //代理地址，这里设置的地址会代替axios中设置的baseURL
-        secure: false,
-        changeOrigin: true, // 开启代理，在本地创建一个虚拟服务端
+        target: process.env.VUE_APP_API, // 代理地址，这里设置的地址会代替 axios 中设置的 baseURL
+        secure: IS_HTTPS, // 默认情况下，不接受运行在 HTTPS 上，且使用了无效证书的后端服务器。如果你想要接受，只要设置 secure: false 就行
+        changeOrigin: true, // 如果接口跨域，设置为 true，否则设置为 false
         ws: false, // 是否启用 websockets
-        pathRewrite: { "^/proxy": "lb/api" }
+        pathRewrite: { "^/proxy": "/" } // 重写 url
       }
     }
   },
@@ -258,7 +259,7 @@ module.exports = {
    * Default: require('os').cpus().length > 1
    * 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
    */
-  parallel: require("os").cpus().length > 1
+  parallel: require("os").cpus().length > 1,
 
   /**
    * Type: Object
@@ -269,7 +270,7 @@ module.exports = {
   /**
    * 这是一个不进行任何 schema 验证的对象，因此它可以用来传递任何第三方插件选项。
    */
-  // pluginOptions: {
+  pluginOptions: {
   //   dockerNginxProxy: {
   //     // eslint-disable-next-line @typescript-eslint/camelcase
   //     proxy_prefix: "/proxy",
@@ -321,5 +322,5 @@ module.exports = {
   //     // 在执行 `dev` , `build` 等其他指令时，程序会自动将 `dll` 指令生成的 `*.dll.js` 等文件自动注入到 index.html 中。
   //     inject: true
   //   }
-  // }
+  }
 };
