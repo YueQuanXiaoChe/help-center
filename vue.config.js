@@ -10,6 +10,8 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 // 是否启用 https 协议
 const IS_HTTPS = false;
+// cdn && dll 相关配置
+const { externals, cdn } = require("./cdn&&dll.js");
 
 // 官方配置文档 ----> https://cli.vuejs.org/zh/config/#baseurl
 module.exports = {
@@ -191,6 +193,16 @@ module.exports = {
     config.resolve.alias
       .set("@views", path.resolve(__dirname, "./src/views"))
       .set("@comp", path.resolve(__dirname, "./src/components"));
+
+    if (IS_PROD) {
+      // 忽略生成环境打包的文件
+      config.externals(externals);
+      // 在 index.html 页面启用 cdn
+      config.plugin("html").tap(args => {
+        args[0].cdn = cdn;
+        return args;
+      });
+    }
   },
 
   css: {

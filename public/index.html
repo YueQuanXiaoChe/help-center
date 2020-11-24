@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <!-- 使用CDN的CSS文件 -->
+    <% if (process.env.NODE_ENV !== 'development') {%>
+      <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.css) { %>
+      <link href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" rel="preload" as="style" cdn2local>
+      <link href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" rel="stylesheet" cdn2local>
+      <% } %>
+      <!-- 使用CDN的JS文件 -->
+      <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.js) { %>
+      <script src="<%= htmlWebpackPlugin.options.cdn.js[i] %>" rel="preload" as="script" cdn2local></script>
+      <% } %>
+    <% } else { %>
+      <link href="<%= htmlWebpackPlugin.options.cdn.css[0] %>" rel="stylesheet" cdn2local>
+      <script src="<%= htmlWebpackPlugin.options.cdn.js[0] %>" cdn2local></script>
+    <% } %>
   </head>
   <body>
     <noscript>
