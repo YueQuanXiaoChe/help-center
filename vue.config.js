@@ -135,7 +135,7 @@ module.exports = {
       // 开启 gzip 压缩
       config.plugins.push(
         new CompressionPlugin({
-          test: /\.(js|css|json|txt|html|ico|svg|png)(\?.*)?$/i, // 测试匹配文件
+          test: /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i, // 测试匹配文件
           // include: /\/includes/, // 要包含的文件
           // exclude: /\/excludes/, // 要排除的文件
           algorithm: "gzip", // 压缩算法

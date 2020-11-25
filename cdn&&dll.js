@@ -42,5 +42,4 @@ Object.entries(externals).map(entry => {
   cdn.js.push(jsdelivr(entry[0], cdnMap.get(entry[0])));
 });
 
-
 exports = module.exports = { externals, cdn, dll };
