@@ -22,8 +22,6 @@ const cdnMap = new Map([
   ["axios", "dist/axios.min.js"]
 ]);
 
-const dll = {};
-
 const cdn = {
   css: [],
   js: [

@@ -16,7 +16,7 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 // 是否启用 https 协议
 const IS_HTTPS = false;
 // cdn && dll 相关配置
-const { externals, cdn } = require("./cdn&&dll.js");
+const { externals, cdn } = require("./cdn.js");
 
 // 官方配置文档 ----> https://cli.vuejs.org/zh/config/#baseurl
 module.exports = {
@@ -290,57 +290,5 @@ module.exports = {
   /**
    * 这是一个不进行任何 schema 验证的对象，因此它可以用来传递任何第三方插件选项。
    */
-  pluginOptions: {
-  //   dockerNginxProxy: {
-  //     // eslint-disable-next-line @typescript-eslint/camelcase
-  //     proxy_prefix: "/proxy",
-  //     // eslint-disable-next-line @typescript-eslint/camelcase
-  //     env_prefix: {
-  //       dev: require("dotenv").config({
-  //         path: ".env.dev"
-  //       }).parsed.VUE_APP_API,
-  //       qa: require("dotenv").config({
-  //         path: ".env.qa"
-  //       }).parsed.VUE_APP_API,
-  //       pro: require("dotenv").config({
-  //         path: ".env.pro"
-  //       }).parsed.VUE_APP_API,
-  //       pre: require("dotenv").config({
-  //         path: ".env.pre"
-  //       }).parsed.VUE_APP_API,
-  //       stress: require("dotenv").config({
-  //         path: ".env.stress"
-  //       }).parsed.VUE_APP_API
-  //     }
-  //   },
-  //   dll: {
-  //     // 入口配置
-  //     // entry: ['vue', 'vue-router', 'axios', 'vuex'],
-  //     entry: {
-  //       vue: ["vue"],
-  //       vueRouter: ["vue-router"],
-  //       vuex: ["vuex"],
-  //       vuexClass: ["vuex-class"],
-  //       vuexPersistedstate: ["vuex-persistedstate"],
-  //       axios: ["axios"],
-  //       vuedraggable: ["vuedraggable"],
-  //       interactjs: ["interactjs"],
-  //       moment: ["moment"],
-  //       elementResizeDetector: ["element-resize-detector"],
-  //       // nodeUuid: ['node-uuid'],
-  //       coreJs: ["core-js"]
-  //     },
-  //     // 输出目录
-  //     output: path.join(__dirname, "./public/dll"),
-  //     // 是否开启 DllReferencePlugin,
-  //     // 默认情况下，插件没有检测到 vendor (执行 `npm run dll` 指令生成的 chunk 包)，会自动关闭。
-  //     // 在有需要的情况下可以手动关闭插件，例如：
-  //     // 1. 为了在开发环境使用vue代码中的提示，可配置只在生产环境开启分包模式，`open : process.env.NODE_ENV === 'production'`。
-  //     // 2. 在构建目标(`target`)为 `node`，需要手动关闭 dll 插件。
-  //     open: IS_PROD,
-  //     // 自动注入到 index.html
-  //     // 在执行 `dev` , `build` 等其他指令时，程序会自动将 `dll` 指令生成的 `*.dll.js` 等文件自动注入到 index.html 中。
-  //     inject: true
-  //   }
-  }
+  pluginOptions: {}
 };
