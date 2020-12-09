@@ -4,6 +4,11 @@ const path = require("path");
 process.env.VUE_APP_VERSION = require("./package.json").version;
 // 是否生产环境
 const IS_PROD = process.env.NODE_ENV === "production";
+// 测量各个插件和loader所花费的时间
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const smp = new SpeedMeasurePlugin();
+// 配置 hard-source-webpack-plugin，首次构建时间没有太大变化，但是第二次开始，构建时间大约可以节约 80%。
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 // compression-webpack-plugin 插件
 const CompressionPlugin = require("compression-webpack-plugin");
 // uglifyjs-webpack-plugin 插件
@@ -140,7 +145,7 @@ module.exports = {
           // exclude: /\/excludes/, // 要排除的文件
           algorithm: "gzip", // 压缩算法
           compressionOptions: { level: 1 }, // 压缩选项
-          // threshold: 1024, // 仅处理大于此大小的资源，按字节计算
+          threshold: 10240, // 仅处理大于此大小的资源，按字节计算
           // minRatio: 0.8, // 仅压缩比该比率更好的资源
           // minRatio: Infinity, // 压缩所有资源，包括字节大小为 0 的文件
           minRatio: Number.MAX_SAFE_INTEGER, // 压缩所有资源，不包括字节大小为 0 的文件
@@ -172,6 +177,9 @@ module.exports = {
           }
         })
       );
+      config = smp.wrap(config);
+    } else {
+      config.plugins.push(new HardSourceWebpackPlugin());
     }
   },
 
