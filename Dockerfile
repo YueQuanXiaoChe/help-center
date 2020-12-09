@@ -14,6 +14,8 @@ RUN npm run build-${MODE-ENV}
 
 
 FROM nginx:alpine
+# 构建参数 MODE
+ARG MODE-ENV
 # 声明运行时容器提供服务端口
 EXPOSE 80
 COPY nginx/gzip.conf /etc/nginx/conf.d/gzip.conf
