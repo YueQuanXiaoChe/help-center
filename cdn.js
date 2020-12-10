@@ -4,40 +4,58 @@ const getVersion = param => {
   return packageJson.dependencies[param].split("^")[1];
 };
 
-const jsdelivr = (key, value) => {
-  return `https://cdn.jsdelivr.net/npm/${key}@${getVersion(key)}/${value}`;
-};
-
 const externals = {
   vue: "Vue",
   "vue-router": "VueRouter",
   vuex: "Vuex",
-  axios: "axios"
+  axios: "axios",
+  "vuex-persistedstate": "createPersistedState",
+  "sockjs-client": "SockJS",
+  'stompjs': 'Stomp'
 };
 
-const cdnMap = new Map([
-  ["vue", "dist/vue.min.js"],
-  ["vue-router", "dist/vue-router.min.js"],
-  ["vuex", "dist/vuex.min.js"],
-  ["axios", "dist/axios.min.js"]
-]);
-
-const cdn = {
+const config_default = {
   css: [],
+  js: []
+};
+
+const config_development = {
+  css: [
+    "https://at.alicdn.com/t/font_1700262_4p69bg9gl8k.css"
+  ],
   js: [
-    // // vue
-    // "https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js",
-    // // vue-router
-    // "https://cdn.jsdelivr.net/npm/vue-router@3.2.0/dist/vue-router.min.js",
-    // // vuex
-    // "https://cdn.jsdelivr.net/npm/vuex@3.4.0/dist/vuex.min.js",
-    // // axios
-    // "https://cdn.jsdelivr.net/npm/axios@0.21.0/dist/axios.min.js"
+    'https://at.alicdn.com/t/font_1700262_4p69bg9gl8k.js'
   ]
 };
 
-Object.entries(externals).map(entry => {
-  cdn.js.push(jsdelivr(entry[0], cdnMap.get(entry[0])));
-});
+const config_production_preload = {
+  css: [
+    'https://at.alicdn.com/t/font_1700262_4p69bg9gl8k.css'
+  ],
+  js: [
+    'https://at.alicdn.com/t/font_1700262_4p69bg9gl8k.js',
+    `https://cdn.jsdelivr.net/npm/vue@${getVersion('vue')}/dist/vue.min.js`,
+    `https://cdn.jsdelivr.net/npm/vuex@${getVersion('vuex')}/dist/vuex.min.js`,
+    `https://cdn.jsdelivr.net/npm/vue-router@${getVersion('vue-router')}/dist/vue-router.min.js`,
+    `https://cdn.jsdelivr.net/npm/axios@${getVersion('axios')}/dist/axios.min.js`,
+    `https://cdn.jsdelivr.net/npm/vuex-persistedstate@${getVersion('vuex-persistedstate')}/dist/vuex-persistedstate.umd.js`
+  ]
+};
 
-exports = module.exports = { externals, cdn };
+const config_production_prefetch = {
+  css: [],
+  js: [
+    `https://cdn.jsdelivr.net/npm/sockjs-client@${getVersion('sockjs-client')}/dist/sockjs.min.js`,
+    `https://cdn.jsdelivr.net/npm/stompjs@${getVersion('stompjs')}/lib/stomp.js`
+  ]
+};
+
+exports = module.exports = {
+  cdn: {
+    externals,
+    config_default,
+    config_development,
+    config_production_preload,
+    config_production_prefetch
+  }
+};
