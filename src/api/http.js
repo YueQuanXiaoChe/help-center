@@ -2,9 +2,9 @@
  * axios封装
  * 请求拦截、响应拦截、错误统一处理
  */
-import axios from "axios";
-import router from "../router/index";
-import store from "../store/index";
+import axios from 'axios';
+import router from '../router/index';
+import store from '../store/index';
 
 /**
  * 提示函数
@@ -16,7 +16,7 @@ const tip = msg => {
   //   duration: 1000,
   //   forbidClick: true
   // });
-  console.log("axios message: ", msg);
+  console.log('axios message: ', msg);
 };
 
 /**
@@ -25,7 +25,7 @@ const tip = msg => {
  */
 const toLogin = () => {
   router.replace({
-    path: "/login",
+    path: '/login',
     query: {
       redirect: router.currentRoute.fullPath
     }
@@ -45,16 +45,16 @@ const errorHandle = (status, other) => {
       break;
     // 403 token 过期，清除 token 并跳转登录页
     case 403:
-      tip("登录过期，请重新登录");
-      localStorage.removeItem("token");
-      store.commit("loginSuccess", null);
+      tip('登录过期，请重新登录');
+      localStorage.removeItem('token');
+      store.commit('loginSuccess', null);
       setTimeout(() => {
         toLogin();
       }, 1000);
       break;
     // 404请求不存在
     case 404:
-      tip("请求的资源不存在");
+      tip('请求的资源不存在');
       break;
     default:
       console.log(other);
@@ -68,8 +68,8 @@ const instance = axios.create({
 });
 
 // 设置post请求头
-instance.defaults.headers.post["Content-Type"] =
-  "application/x-www-form-urlencoded;charset=UTF-8";
+instance.defaults.headers.post['Content-Type'] =
+  'application/x-www-form-urlencoded;charset=UTF-8';
 
 /**
  * 请求拦截器
@@ -105,7 +105,7 @@ instance.interceptors.response.use(
       // network 状态在 app.vue 中控制着一个全局的断网提示组件的显示隐藏
       // 关于断网组件中的刷新重新获取数据，会在断网组件中说明
       if (!window.navigator.onLine) {
-        store.commit("changeNetwork", false);
+        store.commit('changeNetwork', false);
       } else {
         return Promise.reject(error);
       }

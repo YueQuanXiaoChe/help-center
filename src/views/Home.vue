@@ -10,12 +10,12 @@
 // import HelloWorld from "@/components/HelloWorld.vue";
 
 export default {
-  name: "Home",
+  name: 'Home',
   components: {
     // HelloWorld
     HelloWorld: () =>
       import(
-        /* webpackChunkName: "chunk-HelloWorld" */ "@/components/HelloWorld.vue"
+        /* webpackChunkName: "chunk-HelloWorld" */ '@/components/HelloWorld.vue'
       )
   }
 };
