@@ -22,9 +22,9 @@ module.exports = {
   // 在单独的箭头函数参数周围包括括
   arrowParens: 'always',
   // 仅格式化在文件顶部包含特殊注释（称为编译指示）的文件
-  requirePragma: true,
+  requirePragma: false,
   // 在文件顶部插入一个特殊的@format标记，以指定文件已使进行了格式化
-  insertPragma: true,
+  insertPragma: false,
   // 指定HTML文件的全局空格敏感度
   htmlWhitespaceSensitivity: 'ignore',
   // 是否缩进Vue文件中的代码 <script> 和 <style> 标记

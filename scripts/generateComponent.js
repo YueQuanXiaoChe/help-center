@@ -3,9 +3,9 @@ const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
 const resolve = (...file) => path.resolve(__dirname, ...file);
-const log = message => console.log(chalk.green(`${message}`));
-const successLog = message => console.log(chalk.blue(`${message}`));
-const errorLog = error => console.log(chalk.red(`${error}`));
+const log = (message) => console.log(chalk.green(`${message}`));
+const successLog = (message) => console.log(chalk.blue(`${message}`));
+const errorLog = (error) => console.log(chalk.red(`${error}`));
 const { vueTemplate, entryTemplate } = require('./template');
 const generateFile = (path, data) => {
   if (fs.existsSync(path)) {
@@ -13,7 +13,7 @@ const generateFile = (path, data) => {
     return;
   }
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, data, 'utf8', err => {
+    fs.writeFile(path, data, 'utf8', (err) => {
       if (err) {
         errorLog(err.message);
         reject(err);
@@ -25,7 +25,7 @@ const generateFile = (path, data) => {
 };
 log('请输入要生成的组件名称、如需生成全局组件，请加 global/ 前缀');
 let componentName = '';
-process.stdin.on('data', async chunk => {
+process.stdin.on('data', async (chunk) => {
   const inputName = String(chunk)
     .trim()
     .toString();
@@ -72,7 +72,7 @@ process.stdin.on('end', () => {
   process.exit();
 });
 function dotExistDirectoryCreate(directory) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     mkdirs(directory, function() {
       resolve(true);
     });

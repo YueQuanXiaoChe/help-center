@@ -10,7 +10,7 @@ import store from '../store/index';
  * 提示函数
  * 禁止点击蒙层、显示一秒后关闭
  */
-const tip = msg => {
+const tip = (msg) => {
   // Toast({
   //   message: msg,
   //   duration: 1000,
@@ -76,7 +76,7 @@ instance.defaults.headers.post['Content-Type'] =
  * 每次请求前，如果存在 token 则在请求头中携带 token
  */
 instance.interceptors.request.use(
-  config => {
+  (config) => {
     // 登录流程控制中，根据本地是否存在 token 判断用户的登录情况
     // 但是即使 token 存在，也有可能 token 是过期的，所以在每次的请求头中携带 token
     // 后台根据携带的 token 判断用户的登录情况，并返回给我们对应的状态码
@@ -85,15 +85,15 @@ instance.interceptors.request.use(
     token && (config.headers.Authorization = token);
     return config;
   },
-  error => Promise.error(error)
+  (error) => Promise.error(error)
 );
 
 // 响应拦截器
 instance.interceptors.response.use(
   // 请求成功
-  res => (res.status === 200 ? Promise.resolve(res) : Promise.reject(res)),
+  (res) => (res.status === 200 ? Promise.resolve(res) : Promise.reject(res)),
   // 请求失败
-  error => {
+  (error) => {
     const { response } = error;
     if (response) {
       // 请求已发出，但是不在 2xx 的范围

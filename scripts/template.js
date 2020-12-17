@@ -1,6 +1,6 @@
 // template.js
 module.exports = {
-  vueTemplate: compoenntName => {
+  vueTemplate: (compoenntName) => {
     return `<template>
   <div class="${compoenntName}">${compoenntName}组件</div>
 </template>
