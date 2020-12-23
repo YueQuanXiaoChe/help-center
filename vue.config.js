@@ -1,22 +1,22 @@
 // path 是 node 中的一个核心模块，用于处理文件和目录的路径
-const path = require("path");
+const path = require('path');
 // 版本号
-process.env.VUE_APP_VERSION = require("./package.json").version;
+process.env.VUE_APP_VERSION = require('./package.json').version;
 // 是否生产环境
-const IS_PROD = process.env.NODE_ENV === "production";
+const IS_PROD = process.env.NODE_ENV === 'production';
 // 测量各个插件和loader所花费的时间
-const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const smp = new SpeedMeasurePlugin();
 // 配置 hard-source-webpack-plugin，首次构建时间没有太大变化，但是第二次开始，构建时间大约可以节约 80%。
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 // compression-webpack-plugin 插件
-const CompressionPlugin = require("compression-webpack-plugin");
+const CompressionPlugin = require('compression-webpack-plugin');
 // uglifyjs-webpack-plugin 插件
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 // 是否启用 https 协议
 const IS_HTTPS = false;
 // cdn && dll 相关配置
-const { cdn } = require("./cdn.js");
+const { cdn } = require('./cdn.js');
 
 // 官方配置文档 ----> https://cli.vuejs.org/zh/config/#baseurl
 module.exports = {
@@ -26,28 +26,28 @@ module.exports = {
    * 部署应用包时的基本 URL。
    * 这个值也可以被设置为空字符串 ('') 或是相对路径 ('./')，这样所有的资源都会被链接为相对路径，这样打出来的包可以被部署在任意路径。
    */
-  publicPath: IS_PROD ? process.env.VUE_APP_PUBLIC_PATH : "/",
+  publicPath: IS_PROD ? process.env.VUE_APP_PUBLIC_PATH : '/',
 
   /**
    * Type: string
    * Default: 'dist'
    * 输出文件目录，当运行 vue-cli-service build 时生成的生产环境构建文件的目录。注意目标目录在构建之前会被清除 (构建时传入 --no-clean 可关闭该行为)。
    */
-  outputDir: "dist",
+  outputDir: 'dist',
 
   /**
    * Type: string
    * Default: ''
    * 放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录。
    */
-  assetsDir: "",
+  assetsDir: '',
 
   /**
    * Type: string
    * Default: 'index.html'
    * 指定生成的 index.html 的输出路径 (相对于 outputDir)。也可以是一个绝对路径。
    */
-  indexPath: "index.html",
+  indexPath: 'index.html',
 
   /**
    * Type: boolean
@@ -134,7 +134,7 @@ module.exports = {
    * 如果这个值是一个对象，则会通过 webpack-merge 合并到最终的配置中。
    * 如果这个值是一个函数，则会接收被解析的配置作为参数。该函数及可以修改配置并不返回任何东西，也可以返回一个被克隆或合并过的配置版本。
    */
-  configureWebpack: config => {
+  configureWebpack: (config) => {
     // 生产环境
     if (IS_PROD) {
       // 开启 gzip 压缩
@@ -143,13 +143,13 @@ module.exports = {
           test: /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i, // 测试匹配文件
           // include: /\/includes/, // 要包含的文件
           // exclude: /\/excludes/, // 要排除的文件
-          algorithm: "gzip", // 压缩算法
+          algorithm: 'gzip', // 压缩算法
           compressionOptions: { level: 1 }, // 压缩选项
           threshold: 10240, // 仅处理大于此大小的资源，按字节计算
           // minRatio: 0.8, // 仅压缩比该比率更好的资源
           // minRatio: Infinity, // 压缩所有资源，包括字节大小为 0 的文件
           minRatio: Number.MAX_SAFE_INTEGER, // 压缩所有资源，不包括字节大小为 0 的文件
-          filename: "[path][base].gz", // 目标资源文件名
+          filename: '[path][base].gz', // 目标资源文件名
           deleteOriginalAssets: false, // 是否删除原始资源
           cache: true // 启用/禁用文件缓存，缓存默认路径: node_modules/.cache/compression-webpack-plugin
         })
@@ -187,27 +187,27 @@ module.exports = {
    * Type: Function
    * 是一个函数，会接收一个基于 webpack-chain 的 ChainableConfig 实例。允许对内部的 webpack 配置进行更细粒度的修改。
    */
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     // 去除默认预加载
     // prefetch: 用于标记浏览器在页面加载完成后，利用空闲时间预加载的内容。Vue CLI 应用默认为所有作为 async chunk 生成的 javascript 文件 (通过动态 import() 按需 code splitting 的产物) 自动生成 prefetch 提示
     // 移除 prefetch 插件
-    config.plugins.delete("prefetch");
+    config.plugins.delete('prefetch');
 
     // preload: 用于标记页面加载后即将用到的资源，浏览器将在主体渲染前加载 preload 标记文件。Vue CLI 应用会为所有初始化渲染需要的文件自动生成 preload 提示
     // 移除 preload 插件
-    config.plugins.delete("preload");
+    config.plugins.delete('preload');
 
     // 配置别名
     config.resolve.alias
-      .set("@views", path.resolve(__dirname, "./src/views"))
-      .set("@comp", path.resolve(__dirname, "./src/components"));
+      .set('@views', path.resolve(__dirname, './src/views'))
+      .set('@comp', path.resolve(__dirname, './src/components'));
 
     if (IS_PROD) {
       // 忽略生成环境打包的文件
       config.externals(cdn.externals);
     }
     // 在 index.html 页面启用 cdn
-    config.plugin("html").tap(args => {
+    config.plugin('html').tap((args) => {
       args[0].cdn = {
         preload: IS_PROD ? cdn.config_production_preload : cdn.config_development,
         prefetch: IS_PROD ? cdn.config_production_prefetch : cdn.config_default
@@ -262,17 +262,17 @@ module.exports = {
    */
   devServer: {
     open: false, // 设置 server 启动后是否自动打开浏览器
-    host: "0.0.0.0", // 允许外部ip访问，设定为："0.0.0.0"
+    host: '0.0.0.0', // 允许外部ip访问，设定为："0.0.0.0"
     port: 8080, // 指定要监听请求的端口号
     https: IS_HTTPS, // 是否启用 https 协议
     // 如果你的前端应用和后端 API 服务器没有运行在同一个主机上，你需要在开发环境下将 API 请求代理到 API 服务器。这个问题可以通过 vue.config.js 中的 devServer.proxy 选项来配置。
     proxy: {
-      "/proxy": {
+      '/proxy': {
         target: process.env.VUE_APP_API, // 代理地址，这里设置的地址会代替 axios 中设置的 baseURL
         secure: IS_HTTPS, // 默认情况下，不接受运行在 HTTPS 上，且使用了无效证书的后端服务器。如果你想要接受，只要设置 secure: false 就行
         changeOrigin: true, // 如果接口跨域，设置为 true，否则设置为 false
         ws: false, // 是否启用 websockets
-        pathRewrite: { "^/proxy": "/" } // 重写 url
+        pathRewrite: { '^/proxy': '/' } // 重写 url
       }
     }
   },
@@ -282,7 +282,7 @@ module.exports = {
    * Default: require('os').cpus().length > 1
    * 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
    */
-  parallel: require("os").cpus().length > 1,
+  parallel: require('os').cpus().length > 1,
 
   /**
    * Type: Object
